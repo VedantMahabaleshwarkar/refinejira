@@ -63,6 +63,56 @@ npm run build
 npm start
 ```
 
+### OpenShift Deployment
+
+Deploy the app to OpenShift using the provided deployment script:
+
+#### Prerequisites
+
+- OpenShift CLI (`oc`) installed
+- Logged into your OpenShift cluster (`oc login`)
+- A JIRA API token (personal access token from your JIRA instance)
+
+#### Deployment Options
+
+**Dry-run mode** (default) - generates the YAML manifest without applying:
+
+```bash
+./run-jira-refinement-app.sh --dry-run
+```
+
+**Execute mode** - generates and applies the manifest to OpenShift:
+
+```bash
+./run-jira-refinement-app.sh --execute
+```
+
+The script will prompt you for your JIRA API key and generate a deployment manifest (`jira-app-deployment.yaml`) containing:
+- **Secret**: Stores JIRA credentials (`JIRA_BASE_URL`, `JIRA_API_TOKEN`)
+- **Deployment**: Runs the containerized app with health probes and resource limits
+- **Service**: Exposes the app internally on port 80
+- **Route**: Creates an HTTPS endpoint for external access
+
+#### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NAMESPACE` | OpenShift namespace/project to deploy to | Current project (`oc project -q`) |
+
+Example with custom namespace:
+
+```bash
+NAMESPACE=my-project ./run-jira-refinement-app.sh --execute
+```
+
+#### Manual Deployment
+
+If you prefer to apply the manifest manually after a dry-run:
+
+```bash
+oc apply -f jira-app-deployment.yaml -n <your-namespace>
+```
+
 ## Usage
 
 1. **Enter JIRA**: On the home page, enter a JIRA key (e.g., `PROJ-123`) or paste a JIRA URL
